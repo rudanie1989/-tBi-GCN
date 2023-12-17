@@ -18,8 +18,8 @@ from scipy.sparse import coo_matrix
 # import numpy as np
 import scipy.sparse as sp
 
-from rand5fold import *
-from evaluate import *
+from process.rand5fold import *
+from process.evaluate import *
 from layersGCN import GraphConvolution 
 import copy
 import os
