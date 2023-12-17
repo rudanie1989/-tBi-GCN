@@ -41,42 +41,21 @@ class TDrumorGCN(th.nn.Module):
 
     def forward(self, data):
         # x, edge_index = data.x, data.edge_index
-        x, adj = data.x, data.adj  # should I have to resize x and adj -> let's see
+        x, adj = data.x, data.adj  
         batchsize = max(data.batch) + 1
-
         x1 = copy.copy(x.float())
 
         x = x.view(batchsize, 77, 5409)
         adj = adj.view(batchsize, 77, 77)
 
         x = self.conv1(x, adj)  # edge_index)
-        # x=x.view(batchsize*125,64)
-
         x2 = copy.copy(x)
-        # rootindex = data.rootindex
-        # root_extend = th.zeros(len(data.batch), x1.size(1)).to(device) # root_extend: (batchsize*1, 3070)
-
-        # for num_batch in range(batch_size):
-        #     index = (th.eq(data.batch, num_batch))
-        #     root_extend[index] = x1[rootindex[num_batch]]
-        # x = th.cat((x,root_extend), 1) #x 64 + 3070
-
         x = F.relu(x)
         x = F.dropout(x, training=self.training)  # should I do this?
-
-        # x=x.view(batchsize,125,3134)
-
         x = self.conv2(x, adj)  # edge_index)
 
         x = F.relu(x)
         x = x.view(batchsize * 77, 64)
-
-        # root_extend = th.zeros(len(data.batch), x2.size(1)).to(device) #root_extend: (batchsize, 1, 3070)
-        # for num_batch in range(batch_size):
-        #     index = (th.eq(data.batch, num_batch))
-        #     root_extend[index] = x2[rootindex[num_batch]]
-        # x = th.cat((x,root_extend), 1)
-
         x = scatter_mean(x, data.batch, dim=0)
         return x
 
@@ -87,45 +66,19 @@ class BUrumorGCN(th.nn.Module):
         self.conv2 = GraphConvolution(hid_feats, out_feats)  # GCNConv(hid_feats+in_feats, out_feats)
 
     def forward(self, data):
-        # x, edge_index = data.x, data.BU_edge_index
-
         x, adj = data.x, data.BUadj
-
         batchsize = max(data.batch) + 1
         x = x.view(batchsize, 77, 5409)
         adj = adj.view(batchsize, 77, 77)
 
         x1 = copy.copy(x.float())
         x = self.conv1(x, adj)  # edge_index)
-
-        # tam thoi bo root_index
-        # x=x.view(batchsize*125,64)
-
         x2 = copy.copy(x)
-
-        # rootindex = data.rootindex
-        # root_extend = th.zeros(len(data.batch), x1.size(1)).to(device)
-
-        # for num_batch in range(batch_size):
-        #     index = (th.eq(data.batch, num_batch))
-        #     root_extend[index] = x1[rootindex[num_batch]]
-        # x = th.cat((x,root_extend), 1)
-
         x = F.relu(x)
         x = F.dropout(x, training=self.training)
-
-        # x=x.view(batchsize,125,3134)
-
         x = self.conv2(x, adj)  # edge_index)
         x = F.relu(x)
         x = x.view(batchsize * 77, 64)
-
-        # root_extend = th.zeros(len(data.batch), x2.size(1)).to(device)
-        # for num_batch in range(batch_size):
-        #     index = (th.eq(data.batch, num_batch))
-        #     root_extend[index] = x2[rootindex[num_batch]]
-        # x = th.cat((x,root_extend), 1)
-
         x = scatter_mean(x, data.batch, dim=0)
         return x
 
