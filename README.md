@@ -18,10 +18,10 @@ torch_sparse
 torch_cluster
 torch_geometric
 tqdm
-# To train the model
+# Usage
 Run the following command:
 ```bash
-python main.py
+python tBi-GCN.py
 ```
 # References
 [1] Arkaitz Zubiaga, Maria Liakata, and Rob Procter. Exploiting context for rumour
